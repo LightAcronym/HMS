@@ -47,7 +47,7 @@ This project is licensed under the MIT License - see the `LICENSE` file for deta
 - Thanks for the ITC staff for Guidance .
 
 ## Contact
-For any questions or concerns about the project, please open an issue in this repository.
+For any questions or concerns about the project, please open an issue in this repository.<br>
 Or Gewelber - orgewe@gmail.com<br>
 Sacha Koskas - sachakoskas8@gmail.com<br>
 Zoe Stankowski -stankowskizoe@gmail.com<br>
