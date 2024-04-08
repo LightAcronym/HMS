@@ -1,4 +1,4 @@
-Authors: Zoe Stankowski & Nathan Szpilman
+Authors: Zoe Stankowski, Or Gewelber, Sacha Koskas
 
 # Harmful Brain Activity Classification
 ### Project Overview
