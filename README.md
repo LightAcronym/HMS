@@ -35,6 +35,8 @@ for each recording.
 
 `streamlit run inference.py`
 
+Example parquet called: 589979261.parquet at 'data' folder
+
 ### Acknowledgements
 Thank you to Kaggle and HMS for hosting the competition and providing the dataset, and to the ITC staff for guidance and mentorship during this project.
 
