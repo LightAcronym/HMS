@@ -5,6 +5,7 @@ This project is part of the Kaggle competition "HMS Harmful Brain Activity Class
 is to develop machine learning models that can identify harmful brain activity patterns from EEG data.
 This challenge aims to push forward the field of neuroinformatics and contribute to health informatics by automating the
 detection of harmful brain activity, potentially improving patient outcomes in clinical settings."
+[Kaggle](https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification/overview)
 
 ### Competition Data
 The dataset provided by the competition consists of EEG and spectrogram recordings from multiple subjects. 
@@ -30,12 +31,12 @@ for each recording.
 - `589979261.parquet` (for testing the application)
 
 2. Follow requirements.txt installations
+(or pip install -r requirements.txt from CLI)
 
-3. Run the script in your cmd:
+4. Run the script in your cmd:
 
 `streamlit run inference.py`
-
-Example parquet called: 589979261.parquet at 'data' folder
+(This will start a local web server and open the application in your default web browser, where you can upload data for inference(exameple: 589979261.parquet).) 
 
 ### Acknowledgements
 Thank you to Kaggle and HMS for hosting the competition and providing the dataset, and to the ITC staff for guidance and mentorship during this project.
