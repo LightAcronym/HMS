@@ -4,7 +4,7 @@
 This project is part of the Kaggle competition "HMS Harmful Brain Activity Classification." The goal of this competition
 is to develop machine learning models that can identify harmful brain activity patterns from EEG data.
 This challenge aims to push forward the field of neuroinformatics and contribute to health informatics by automating the
-detection of harmful brain activity, potentially improving patient outcomes in clinical settings."
+detection of harmful brain activity, potentially improving patient outcomes in clinical settings."<br>
 [Kaggle](https://www.kaggle.com/competitions/hms-harmful-brain-activity-classification/overview)
 
 ### Competition Data
@@ -35,7 +35,7 @@ for each recording.
 
 4. Run the script in your cmd:
 
-`streamlit run inference.py`
+`streamlit run inference.py`<br>
 (This will start a local web server and open the application in your default web browser, where you can upload data for inference(exameple: 589979261.parquet).) 
 
 ### Acknowledgements
