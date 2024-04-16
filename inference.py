@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from keras import Model, optimizers, losses, Input
 from keras.layers import Dense, GlobalAveragePooling2D, Concatenate
 import warnings
@@ -9,6 +8,8 @@ import efficientnet.tfkeras as efn
 from DataGenerator import DataGenerator
 import json
 from PIL import Image
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 # Disable TensorFlow and Keras warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -45,7 +46,6 @@ def build_model():
     model.compile(loss=loss, optimizer=opt)
     return model
 
-
 def process_img(img):
     img = np.clip(img, np.exp(-4), np.exp(8))
     img = np.log(img)
@@ -64,47 +64,50 @@ def process_img(img):
 
 def show_images(df):
     st.write('''
-    
+
     ## 10-min Spectrogram image
-    
+
     ''')
     data = np.array(df)
-    large_img = np.ones((400, 300), dtype='float32')
 
     length_sec = len(df) * 2
     st.write(f"""
-    
-    The total duration of this spectrogram is {length_sec} seconds (or {length_sec/60:.2f} minutes).
+
+    The total duration of this spectrogram is {length_sec} seconds (or {length_sec / 60:.2f} minutes).
     The classifier utilizes a 10-minute window of a spectrogram. 
-    
+
     Please enter the starting point (in seconds) to indicate the start point of the 10-minute window.
-    
+
     """)
-    # start_seconds = st.number_input("Enter here", min_value=0,
-    #                               max_value=length_sec - 600, step=1)
+    regions = ['LL', 'RL', 'RP', 'LP']
     start_seconds = st.slider("Select start time (seconds)", min_value=0,
                               max_value=length_sec - 600, step=1)
     r = start_seconds // 2
     if start_seconds is not None:
-        for k in range(4):
+        fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
+        for k, ax in enumerate(axes.flat):
             img = data[r:r + 300, k * 100:(k + 1) * 100].T
             img = process_img(img)
-            large_img[100 * k:100 * (k + 1), :] = img[:, :]
-        large_img_color = plt.cm.viridis(large_img)
-        st.image(large_img_color,
-                 caption=f"Concatenated spectrogram images of the LL, RL, RP, LP brain regions",
-                 use_column_width='auto',
-                 width=20
-                 )
+            img_color = ax.imshow(img, cmap='viridis', aspect='auto', origin='lower')
+            ax.set_title(f"Region: {regions[k]}")
+            ax.set_xlabel("Time (sec)")
+            ax.set_ylabel("Frequency (Hz)")
+            ax.set_xticks(np.arange(0, 301, 50))
+            ax.set_yticks(np.arange(0, 101, 20))
+            ax.tick_params(axis='both', which='major', labelsize=8)
+            ax.set_yticklabels([f'{i / 5}' for i in range(0, 101, 20)])
+
+            # Optionally, you can add colorbar for each image
+            cbar = fig.colorbar(img_color, ax=ax)
+            cbar.set_label('Intensity')
+
+        plt.tight_layout()
+        st.pyplot(fig)
+
     return start_seconds
-##
 
 def main(model):
     st.title('Harmful Brain Activity Classifier')
-
-    # displaying images of clear-cut examples
-    image = load_images()
-    st.image(image, use_column_width='auto', width=10)
 
     uploaded_file = st.file_uploader('Upload a .parquet file', type='parquet')
     if uploaded_file is not None:
@@ -118,22 +121,29 @@ def main(model):
         prediction = model.predict(test_gen[0], verbose=1)
         columns = ['Seizure', 'LPD', 'GPD', 'LRDA', 'GRDA', 'Other']
         res = pd.DataFrame(data=prediction, columns=columns)
+        max_vote_diagnosis = columns[np.argmax(res)]
 
         st.write(f"""
         
-        ## Model predictions 
+        ## Model prediction: 
         
-        Spectrogram ID {file_name}:
+        ### Diagnosis: {max_vote_diagnosis}
         
+        {conf[max_vote_diagnosis]}
         """)
-        st.write(res)
-        max_vote_diagnosis = columns[np.argmax(res)]
-        max_vote_probability = np.max(res)
-        st.write(
-            f"The final diagnosis with the highest vote probability is '{max_vote_diagnosis}', "
-            f"with a probability of {max_vote_probability:.2f}")
-        st.write("Explanation:")
-        st.write(conf[max_vote_diagnosis])
+
+        plt.figure(figsize=(10, 6))
+        bars = plt.barh(res.columns, res.iloc[0], color='skyblue')  # Plot all bars with skyblue color
+        max_index = res.iloc[0].argmax()
+        bars[max_index].set_color('red')
+
+        plt.xlabel('Probability')
+        plt.title('Distribution of Votes')
+        plt.gca().xaxis.set_major_locator(ticker.MultipleLocator(0.05))
+        plt.gca().invert_yaxis()
+        for i, v in enumerate(res.values[0]):
+            plt.text(v + 0.01, i, str(round(v, 2)), va='center', color='black')
+        st.pyplot(plt)
 
 
 if __name__ == '__main__':
